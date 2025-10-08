@@ -1,323 +1,193 @@
 import { useEffect, useState } from "react";
-import { FaBoxOpen, FaReact, FaNodeJs, FaEye, FaTimes } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { FaReact, FaNodeJs, FaEnvelope, FaEye, FaTimes } from "react-icons/fa";
 import { SiMongodb, SiTailwindcss } from "react-icons/si";
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState<string>("hero");
-  const [showDemo, setShowDemo] = useState<boolean>(false);
-  const [viewCount, setViewCount] = useState<number>(0);
+  const [showDemo, setShowDemo] = useState(false);
+  const [viewCount, setViewCount] = useState(0);
   const [formData, setFormData] = useState({ nombre: "", email: "", mensaje: "" });
 
-  // ----------------------
-  // Contador visitas por IP
-  // ----------------------
   useEffect(() => {
-    const fetchIP = async () => {
-      try {
-        const res = await fetch("https://api.ipify.org?format=json");
-        const data = await res.json();
-        const userIP = data.ip;
-
-        const storedIPs = JSON.parse(localStorage.getItem("portfolioIPs") || "[]");
-
-        if (!storedIPs.includes(userIP)) {
-          const count = parseInt(localStorage.getItem("portfolioViews") || "0") + 1;
-          localStorage.setItem("portfolioViews", count.toString());
-          setViewCount(count);
-
-          storedIPs.push(userIP);
-          localStorage.setItem("portfolioIPs", JSON.stringify(storedIPs));
-        } else {
-          const count = parseInt(localStorage.getItem("portfolioViews") || "1");
-          setViewCount(count);
-        }
-      } catch (error) {
-        console.error("Error obteniendo IP:", error);
-      }
-    };
-    fetchIP();
+    const stored = localStorage.getItem("portfolioViews");
+    const count = stored ? parseInt(stored) + 1 : 1;
+    localStorage.setItem("portfolioViews", count.toString());
+    setViewCount(count);
   }, []);
 
-  const proyectos = [
-    {
-      nombre: "Inventario App",
-      descripcion:
-        "App de inventario en tiempo real, con control de stock y rutas de despacho.",
-      url: "https://inventario-app-fr1k.vercel.app/inventario",
-      icon: <FaBoxOpen className="text-gray-300 w-10 h-10" />,
-      tecnologias: ["React", "Node.js", "MongoDB", "TailwindCSS"],
-    },
-  ];
-
-  const techData: Record<string, { color: string; icon?: JSX.Element }> = {
-    React: { color: "bg-blue-500", icon: <FaReact className="w-4 h-4" /> },
-    "Node.js": { color: "bg-green-600", icon: <FaNodeJs className="w-4 h-4" /> },
-    MongoDB: { color: "bg-green-800", icon: <SiMongodb className="w-4 h-4" /> },
-    TailwindCSS: { color: "bg-sky-400", icon: <SiTailwindcss className="w-4 h-4" /> },
-  };
-
-  // ----------------------
-  // Scrollspy
-  // ----------------------
-  useEffect(() => {
-    const handleScroll = () => {
-      const hero = document.getElementById("hero")?.offsetTop ?? 0;
-      const acerca = document.getElementById("acerca")?.offsetTop ?? 0;
-      const proyectosTop = document.getElementById("proyectos")?.offsetTop ?? 0;
-      const contactoTop = document.getElementById("contacto")?.offsetTop ?? 0;
-      const scrollPos = window.scrollY + 100;
-
-      if (scrollPos >= contactoTop) setActiveSection("contacto");
-      else if (scrollPos >= proyectosTop) setActiveSection("proyectos");
-      else if (scrollPos >= acerca) setActiveSection("acerca");
-      else setActiveSection("hero");
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Formulario enviado:", formData);
-    alert("📨 Gracias por contactarme, te responderé pronto!");
+    alert("Gracias por tu mensaje ✨");
     setFormData({ nombre: "", email: "", mensaje: "" });
   };
 
-  return (
-    <div className="min-h-screen w-full bg-gray-900 text-white font-sans relative">
+  const servicios = [
+    { icon: <FaReact className="text-blue-500 w-8 h-8" />, titulo: "Frontend Moderno", desc: "Interfaces rápidas y responsivas con React & Tailwind." },
+    { icon: <FaNodeJs className="text-green-600 w-8 h-8" />, titulo: "Backend Escalable", desc: "APIs sólidas con Node.js y bases de datos seguras." },
+    { icon: <SiMongodb className="text-emerald-600 w-8 h-8" />, titulo: "Bases de Datos", desc: "Modelado de datos optimizado en MongoDB o SQL." },
+  ];
 
-      {/* ----------------------- */}
-      {/* Menú Horizontal */}
-      {/* ----------------------- */}
-      <header className="fixed top-0 left-0 w-full bg-gray-800/80 backdrop-blur-md shadow z-50">
-        <nav className="max-w-6xl mx-auto px-6 py-4 flex justify-center gap-8">
-          {["hero", "acerca", "proyectos", "contacto"].map((id) => (
-            <button
-              key={id}
-              onClick={() => scrollToSection(id)}
-              className={`px-3 py-1 rounded font-semibold transition ${
-                activeSection === id ? "text-yellow-400" : "text-white/80"
-              }`}
-            >
-              {id === "hero"
-                ? "Inicio"
-                : id === "acerca"
-                ? "Acerca de mí"
-                : id === "proyectos"
-                }
-            </button>
-          ))}
+  return (
+    <div className="min-h-screen bg-white text-[#0A192F] font-[Inter]">
+      {/* Header */}
+      <header className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-lg shadow z-50">
+        <nav className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Jose Manaure</h1>
+          <div className="flex gap-6 text-sm font-medium">
+            <a href="#inicio" className="hover:text-blue-600">Inicio</a>
+            <a href="#servicios" className="hover:text-blue-600">Servicios</a>
+            <a href="#proyecto" className="hover:text-blue-600">Proyecto</a>
+            <a href="#contacto" className="hover:text-blue-600">Contacto</a>
+          </div>
         </nav>
       </header>
 
-      {/* ----------------------- */}
       {/* Hero */}
-      {/* ----------------------- */}
-      <section
-        id="hero"
-        className="h-screen flex flex-col justify-center items-center text-center px-6"
-      >
-        {/* Foto circular */}
-        <div className="mb-6 animate-slideInOnce">
-          <img
-            src="/ruta-de-tu-foto.jpg" // <-- reemplaza con tu foto
-            alt="Jose Manaure"
-            className="w-40 h-40 rounded-full border-4 border-gray-700 object-cover shadow-lg"
-          />
-        </div>
-
-        <h1 className="text-5xl md:text-6xl font-extrabold mb-4 animate-slideInOnce">
-          Hola, soy <span className="text-gray-300">Jose Manaure</span>
-        </h1>
-
-        <p className="text-lg md:text-xl mb-6 max-w-3xl opacity-90">
-          🚀 Desarrollador Fullstack con experiencia en{" "}
-          <span className="text-blue-400 font-bold animate-fadeInOnce delay-[200ms]">React</span>,{" "}
-          <span className="text-green-600 font-bold animate-fadeInOnce delay-[400ms]">Node.js</span>,{" "}
-          <span className="text-green-800 font-bold animate-fadeInOnce delay-[600ms]">MongoDB</span> y{" "}
-          <span className="text-purple-400 font-bold animate-fadeInOnce delay-[800ms]">TypeScript</span>.  
-          <br />
-          Me apasiona crear aplicaciones web útiles, rápidas y con diseño atractivo.
+      <section id="inicio" className="min-h-screen flex flex-col justify-center items-center text-center px-6">
+        <motion.img
+          src="/ruta-de-tu-foto.jpg"
+          alt="Jose Manaure"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="w-36 h-36 rounded-full border-4 border-blue-500 object-cover mb-6"
+        />
+        <motion.h1
+          className="text-4xl md:text-5xl font-bold mb-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+        >
+          Hola, soy <span className="text-blue-600">Jose Manaure</span>
+        </motion.h1>
+        <p className="max-w-2xl text-gray-600 text-lg mb-8">
+          Desarrollador <strong>Full Stack</strong>con experiencia en <strong>JavaScript,</strong>
+          <strong> TypeScript, React, Node.js, Express y MongoDB.</strong>
         </p>
-
-        <div className="flex flex-col sm:flex-row gap-6 justify-center">
-          {[
-            { label: "📄 Ver mi CV", link: "/cv.pdf" },
-            { label: "🐙 GitHub", link: "https://github.com/JoseManaure" },
-          ].map((btn, i) => (
-            <a
-              key={i}
-              href={btn.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-gray-700/80 text-white font-bold rounded-xl shadow-lg backdrop-blur-md hover:bg-gray-600/80 transform hover:scale-105 transition duration-300 text-lg relative overflow-hidden group"
-            >
-              {btn.label}
-              <span className="absolute inset-0 bg-gradient-to-r from-gray-400/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
-            </a>
-          ))}
+        <div className="flex gap-4">
+          <a
+            href="https://github.com/JoseManaure"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+          >
+            GitHub
+          </a>
+          <a
+            href="/cv.pdf"
+            className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition"
+          >
+            Ver CV
+          </a>
         </div>
-
-        <p className="mt-8 text-sm opacity-60">👁️ {viewCount} visitas</p>
+        <p className="text-gray-400 text-sm mt-8">👁️ {viewCount} visitas</p>
       </section>
 
-      {/* ----------------------- */}
-      {/* Acerca de mí */}
-      {/* ----------------------- */}
-      <section id="acerca" className="py-20 bg-gray-800/30 backdrop-blur-md">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6">Acerca de mí</h2>
-          <p className="text-lg text-white/90 mb-6">
-            Soy desarrollador web fullstack con pasión por crear aplicaciones eficientes y
-            elegantes. Me gusta trabajar con tecnologías modernas y siempre busco mejorar la
-            experiencia de usuario.
-          </p>
-          <p className="text-lg text-white/80">
-            Me enfoco en la calidad del código, arquitectura limpia y rendimiento en frontend y backend.
-          </p>
-        </div>
-      </section>
-
-      {/* ----------------------- */}
-      {/* Proyectos */}
-      {/* ----------------------- */}
-      <section id="proyectos" className="py-20 bg-gray-900/30">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-12">Proyectos</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-            {proyectos.map((proyecto, i) => (
-              <div
+      {/* Servicios */}
+      <section id="servicios" className="py-24 bg-[#E6F1FF]/60">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-12">Servicios</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {servicios.map((s, i) => (
+              <motion.div
                 key={i}
-                className="bg-gray-800/70 backdrop-blur-lg rounded-3xl p-8 flex flex-col items-center text-center shadow-xl hover:shadow-2xl hover:-translate-y-2 hover:scale-105 transition transform"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.2 }}
+                viewport={{ once: true }}
+                className="p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition"
               >
-                <div className="mb-4">{proyecto.icon}</div>
-                <h3 className="text-2xl font-bold mb-2">{proyecto.nombre}</h3>
-                <p className="text-white/80 mb-4">{proyecto.descripcion}</p>
-
-                {/* Tecnologías */}
-                <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {proyecto.tecnologias?.map((tech, idx) => {
-                    const data = techData[tech];
-                    return (
-                      <span
-                        key={idx}
-                        className={`${data?.color ?? "bg-gray-700"} text-white font-bold px-3 py-1 rounded-full text-sm flex items-center gap-1`}
-                      >
-                        {data?.icon}
-                        <strong>{tech}</strong>
-                      </span>
-                    );
-                  })}
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowDemo(true)}
-                    className="px-5 py-2 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-500 transition"
-                  >
-                    <FaEye className="inline mr-2" /> Ver Demo
-                  </button>
-                  <a
-                    href="https://github.com/JoseManaure/InventarioApp"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2 bg-gray-700 text-white rounded-xl font-semibold hover:bg-gray-600 transition"
-                  >
-                    Código →
-                  </a>
-                </div>
-              </div>
+                <div className="flex justify-center mb-4">{s.icon}</div>
+                <h3 className="text-xl font-semibold mb-2">{s.titulo}</h3>
+                <p className="text-gray-600">{s.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Proyecto */}
+      <section id="proyecto" className="py-20 text-center max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold mb-8">Proyecto Destacado</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-[#E6F1FF]/50 p-8 rounded-3xl shadow-lg"
+        >
+          <h3 className="text-2xl font-semibold mb-3">Inventario App</h3>
+          <p className="text-gray-600 mb-6">
+            Aplicación web de inventario con gestión de stock, control de rutas y dashboard intuitivo.
+          </p>
+          <button
+            onClick={() => setShowDemo(true)}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            <FaEye className="inline mr-2" /> Ver Demo
+          </button>
+        </motion.div>
+      </section>
+
       {/* Modal Demo */}
       {showDemo && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="relative bg-gray-800 p-6 rounded-2xl w-11/12 md:w-3/4 h-3/4 flex flex-col">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-11/12 md:w-3/4 h-3/4 flex flex-col">
             <button
               onClick={() => setShowDemo(false)}
-              className="absolute top-3 right-3 text-gray-300 hover:text-white"
+              className="absolute top-3 right-3 text-gray-500 hover:text-black"
             >
-              <FaTimes size={24} />
+              <FaTimes size={22} />
             </button>
             <iframe
               src="https://inventario-app-fr1k.vercel.app/inventario"
               title="Demo"
-              className="w-full h-full rounded-xl border border-gray-700"
+              className="w-full h-full rounded-b-2xl"
             ></iframe>
           </div>
         </div>
       )}
 
-      {/* ----------------------- 
-    
-      <section id="contacto" className="py-20 bg-gray-800/30 text-center">
-        <div className="max-w-lg mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-8">Contacto</h2>
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Tu nombre"
-              className="w-full p-3 rounded-lg bg-gray-900/70 border border-gray-700 text-white"
-              value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              required
-            />
-            <input
-              type="email"
-              placeholder="Tu email"
-              className="w-full p-3 rounded-lg bg-gray-900/70 border border-gray-700 text-white"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-            />
-            <textarea
-              placeholder="Tu mensaje..."
-              rows={4}
-              className="w-full p-3 rounded-lg bg-gray-900/70 border border-gray-700 text-white"
-              value={formData.mensaje}
-              onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
-              required
-            ></textarea>
-            <button
-              type="submit"
-              className="w-full py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-500 transition"
-            >
-              Enviar mensaje
-            </button>
-          </form>
-        </div>
+      {/* Contacto */}
+      <section id="contacto" className="py-24 bg-[#E6F1FF]/60 text-center">
+        <h2 className="text-3xl font-bold mb-8">Contáctame</h2>
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-md mx-auto flex flex-col gap-4 bg-white p-8 rounded-2xl shadow"
+        >
+          <input
+            type="text"
+            placeholder="Tu nombre"
+            className="border border-gray-300 rounded-lg p-3 focus:border-blue-500 outline-none"
+            value={formData.nombre}
+            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Tu correo"
+            className="border border-gray-300 rounded-lg p-3 focus:border-blue-500 outline-none"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+          />
+          <textarea
+            placeholder="Tu mensaje..."
+            rows={4}
+            className="border border-gray-300 rounded-lg p-3 focus:border-blue-500 outline-none"
+            value={formData.mensaje}
+            onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
+            required
+          ></textarea>
+          <button
+            type="submit"
+            className="py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          >
+            <FaEnvelope className="inline mr-2" /> Enviar mensaje
+          </button>
+        </form>
       </section>
-*/}
-      {/* ----------------------- */}
-      {/* Footer */}
-      {/* ----------------------- */}
-      <footer className="py-10 text-center text-white/90 bg-black/30">
-        <p className="text-sm">© {new Date().getFullYear()} Jose Manaure. Todos los derechos reservados.</p>
-      </footer>
 
-      {/* Animaciones */}
-      <style>
-        {`
-          @keyframes fadeInOnce {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-          }
-          @keyframes slideInOnce {
-            0% { opacity: 0; transform: translateY(-20px); }
-            100% { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeInOnce { animation: fadeInOnce 1s ease forwards; }
-          .animate-slideInOnce { animation: slideInOnce 1s ease forwards; }
-        `}
-      </style>
+      <footer className="py-8 text-center text-gray-500 text-sm border-t border-gray-200">
+        © {new Date().getFullYear()} Jose Manaure. Todos los derechos reservados.
+      </footer>
     </div>
   );
 }
