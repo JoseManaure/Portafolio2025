@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaReact, FaNodeJs, FaEnvelope, FaEye, FaTimes } from "react-icons/fa";
-import { SiMongodb, SiTailwindcss } from "react-icons/si";
+import { SiMongodb } from "react-icons/si";
 
 export default function App() {
   const [showDemo, setShowDemo] = useState(false);
