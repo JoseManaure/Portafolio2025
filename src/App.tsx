@@ -64,6 +64,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full bg-gray-900 text-white font-sans relative">
+      <br></br>|
       {/* Header */}
       <header className="fixed top-0 left-0 w-full bg-gray-800/80 backdrop-blur-md shadow z-50">
         <nav className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
